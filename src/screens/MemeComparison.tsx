@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Image, StyleSheet, ActivityIndicator, ScrollView } from "react-native";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { Text, Image, StyleSheet, ActivityIndicator, ScrollView } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import * as tf from "@tensorflow/tfjs";
 import "@tensorflow/tfjs-react-native";
 import { decodeJpeg } from "@tensorflow/tfjs-react-native";
@@ -8,11 +8,20 @@ import { Asset } from "expo-asset";
 import { MemeTemplates } from "../../assets/templates/MemeTemplates";
 import * as ImageManipulator from "expo-image-manipulator";
 import type { RootStackParamList } from "../../App";
+import { CTAButton } from "../Components";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
-type MemeComparisonRouteProp = RouteProp<RootStackParamList, "MemeComparison">;
+type MemeComparisonNavigationProp = NativeStackNavigationProp<
+    RootStackParamList,
+    "MemeComparison"
+>;
 
-export default function MemeComparison() {
-    const route = useRoute<MemeComparisonRouteProp>();
+type Props = {
+    route: { params: { photoUri: string } };
+};
+
+export default function MemeComparison({ route }: Props) {
+    const navigation = useNavigation<MemeComparisonNavigationProp>();
     const { photoUri } = route.params;
 
     const [result, setResult] = useState<string | null>(null);
@@ -36,6 +45,8 @@ export default function MemeComparison() {
         return imageTensor;
     };
 
+    const SIMILARITY_THRESHOLD = 0.35;
+
     useEffect(() => {
         (async () => {
             try {
@@ -46,27 +57,32 @@ export default function MemeComparison() {
                     { fromTFHub: true }
                 );
 
-                // Convert captured photo to JPEG and tensor
-                const capturedJPEG = await ImageManipulator.manipulateAsync(photoUri, [], { format: ImageManipulator.SaveFormat.JPEG });
+                // Convert captured photo to JPEG (modern API)
+                const capturedJPEG = await ImageManipulator.manipulateAsync(photoUri, [], {
+                    compress: 1,
+                    format: ImageManipulator.SaveFormat.JPEG,
+                });
+
                 const capturedTensor = await loadImageAsTensor(capturedJPEG.uri);
                 const capturedEmbedding = model.execute(capturedTensor) as tf.Tensor;
 
-                // Compare against templates
                 let bestScore = -1;
                 let bestTemplate: typeof MemeTemplates[0] | null = null;
 
                 for (const t of MemeTemplates) {
                     const asset = Asset.fromModule(t.src);
                     await asset.downloadAsync();
+
                     const templateJPEG = await ImageManipulator.manipulateAsync(
                         asset.localUri || asset.uri,
                         [],
-                        { format: ImageManipulator.SaveFormat.JPEG }
+                        { compress: 1, format: ImageManipulator.SaveFormat.JPEG } // updated API
                     );
+
                     const tensor = await loadImageAsTensor(templateJPEG.uri);
                     const templateEmbedding = model.execute(tensor) as tf.Tensor;
 
-                    const similarity = cosineSimilarity(capturedEmbedding, templateEmbedding);
+                    const similarity = Math.abs(cosineSimilarity(capturedEmbedding, templateEmbedding));
                     console.log(`Similarity with ${t.name}:`, similarity);
 
                     if (similarity > bestScore) {
@@ -75,15 +91,17 @@ export default function MemeComparison() {
                     }
                 }
 
-                if (bestTemplate) {
+                if (bestTemplate && bestScore >= SIMILARITY_THRESHOLD) {
                     setResult(`${bestTemplate.name} (similarity: ${Math.round(bestScore * 100)}%)`);
                     setMatchedTemplateUri(Asset.fromModule(bestTemplate.src).uri);
                 } else {
                     setResult("No match found");
+                    setMatchedTemplateUri(null);
                 }
             } catch (err) {
                 console.log("Error comparing images:", err);
                 setResult("Error processing image");
+                setMatchedTemplateUri(null);
             } finally {
                 setLoading(false);
             }
@@ -95,7 +113,7 @@ export default function MemeComparison() {
             <Text style={styles.title}>Captured Photo:</Text>
             <Image source={{ uri: photoUri }} style={styles.image} />
 
-            {loading && <ActivityIndicator size="large" color="#007AFF" style={{ marginTop: 20 }} />}
+            {loading && <ActivityIndicator size="large" color="#007AFF" style={styles.loader} />}
             {!loading && result && (
                 <>
                     <Text style={styles.result}>{result}</Text>
@@ -107,6 +125,7 @@ export default function MemeComparison() {
                     )}
                 </>
             )}
+            <CTAButton title={"Go Back"} onPress={() => navigation.navigate("MemeCamera")} />
         </ScrollView>
     );
 }
@@ -114,22 +133,29 @@ export default function MemeComparison() {
 const styles = StyleSheet.create({
     container: {
         alignItems: "center",
-        paddingVertical: 20,
+        paddingVertical: 30,
         paddingHorizontal: 10,
+        marginVertical: 60,
+    },
+    loader: {
+        margin: 50,
     },
     image: {
-        width: 300,
-        height: 300,
-        resizeMode: "contain",
+        width: 200,
+        height: 200,
+        resizeMode: "cover",
+        overflow: "hidden",
         marginVertical: 10,
     },
     result: {
         fontSize: 18,
         fontWeight: "bold",
         marginVertical: 10,
+        fontFamily: "ComicSans",
     },
     title: {
         fontSize: 16,
         fontWeight: "600",
+        fontFamily: "ComicSans",
     },
 });

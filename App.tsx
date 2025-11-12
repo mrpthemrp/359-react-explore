@@ -1,9 +1,8 @@
 import {useFonts} from "expo-font";
 import * as React from 'react';
 import Main from "./src/screens/Main";
-import {theme} from "./src/utils/Theme";
 import {useEffect} from "react";
-import {createStaticNavigation, NavigationContainer} from "@react-navigation/native";
+import {NavigationContainer} from "@react-navigation/native";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import Camera from "./src/screens/Camera";
 import MemeComparison from "./src/screens/MemeComparison";
@@ -30,7 +29,7 @@ export default function App() {
         return null;
     }
     return (
-        <NavigationContainer theme={theme}>
+        <NavigationContainer>
             <RootStack.Navigator screenOptions={{headerShown: false}}>
                 <RootStack.Screen name="Main" component={Main}/>
                 <RootStack.Screen name="MemeCamera" component={Camera}/>

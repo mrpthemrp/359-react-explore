@@ -8,10 +8,10 @@ export default function Main() {
     return (
         <SafeAreaProvider>
             <SafeAreaView style={styles.container}>
-                <View>
+                <View style={styles.container2}>
+                    <Text style={styles.text}>Meme Recognizer App</Text>
                     <Image style={styles.img} source={require("../../assets/imgs/cat.jpg")}/>
-                    <Text style={{fontFamily: "ComicSans"}}>Open up App.tsx to start working on your app!</Text>
-                    <CTAButton title={"Open Meme Recognizer"} onPress={() =>
+                    <CTAButton title={"Open Meme Recognizer Camera"} onPress={() =>
                         // @ts-ignore
                         navigation.navigate("MemeCamera")
                     }/>
@@ -27,8 +27,17 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
+    container2: {
+        flexDirection: "column",
+        gap: 50,
+        alignItems: 'center',
+    },
     img: {
         resizeMode: "cover",
         alignSelf: "center",
+    },
+    text: {
+        fontFamily: "ComicSans",
+        fontSize: 25
     }
 });

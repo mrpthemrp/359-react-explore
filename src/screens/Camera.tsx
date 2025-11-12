@@ -2,13 +2,13 @@ import React, {useRef, useState, useEffect} from "react";
 import {View, Text, Button, StyleSheet, Alert} from "react-native";
 import {CameraView, CameraType, useCameraPermissions} from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
-import * as ImageManipulator from "expo-image-manipulator";
 import * as tf from "@tensorflow/tfjs";
 import "@tensorflow/tfjs-react-native";
-import {decodeJpeg} from "@tensorflow/tfjs-react-native";
 import {useNavigation} from "@react-navigation/native";
 import type {NativeStackNavigationProp} from "@react-navigation/native-stack";
 import {RootStackParamList} from "../../App";
+import {CTAButton, IconButton} from "../Components";
+import SvgSwitch from "../../assets/imgs/switch";
 
 type MemeCameraNavigationProp = NativeStackNavigationProp<
     RootStackParamList,
@@ -39,17 +39,6 @@ export default function Camera() {
             console.log("Model loaded");
         })();
     }, []);
-
-    const loadImageAsTensor = async (uri: string) => {
-        const response = await fetch(uri);
-        const buffer = await response.arrayBuffer();
-        const u8array = new Uint8Array(buffer);
-        let imageTensor = decodeJpeg(u8array);
-        imageTensor = tf.image.resizeBilinear(imageTensor, [224, 224]);
-        imageTensor = imageTensor.div(255.0);
-        imageTensor = imageTensor.expandDims(0);
-        return imageTensor;
-    };
 
     const takePictureAndNavigate = async () => {
         if (!cameraRef.current || !model) {
@@ -98,12 +87,17 @@ export default function Camera() {
         }
     };
 
-    if (!permission) return <Text>Requesting camera permission…</Text>;
+    if (!permission) return <Text style={styles.comicStyle}>{"Requesting camera permission…"}</Text>;
     if (!permission.granted)
         return <Button title="Grant permission" onPress={requestPermission}/>;
 
     return (
         <View style={styles.container}>
+            <Text style={styles.title}>{"Meme Recognizer Camera"}</Text>
+            <IconButton
+                title="Toggle Camera"
+                onPress={() => setFacing(facing === "back" ? "front" : "back")}
+                icon={SvgSwitch}/>
             <CameraView
                 ref={cameraRef}
                 style={styles.cameraStyle}
@@ -114,29 +108,45 @@ export default function Camera() {
                 }}
                 onMountError={(error) => console.log("Camera mount error:", error)}
             />
-            <Button
-                title="Capture & Recognize"
-                onPress={takePictureAndNavigate}
-                disabled={!cameraReady || !modelLoaded}
-            />
-            <Button
-                title="Toggle Camera"
-                onPress={() => setFacing(facing === "back" ? "front" : "back")}
-            />
-            {!cameraReady && <Text>Loading camera…</Text>}
-            {!modelLoaded && <Text>Loading model…</Text>}
+            {!modelLoaded && <Text style={styles.comicStyle}>{"Loading model…"}</Text>}
+            {!cameraReady && <Text style={styles.comicStyle}>{"Loading camera…"}</Text>}
+            <View style={styles.cameraBtns}>
+                <CTAButton
+                    title="Capture & Recognize"
+                    onPress={takePictureAndNavigate}
+                    disabled={!cameraReady || !modelLoaded}
+                />
+            </View>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
+        fontFamily: "ComicSans",
+        gap: 20,
+        marginTop: 50,
+        paddingHorizontal: 20,
     },
     cameraStyle: {
-        width: "90%",
-        height: "75%",
+        width: "100%",
+        height: "70%",
+        overflow: "hidden",
     },
+    cameraBtns: {
+        flexDirection: "column",
+        gap: 25,
+        marginTop: 25,
+
+    },
+    comicStyle: {
+        fontFamily: "ComicSans",
+    },
+    title:{
+        fontFamily: "ComicSans",
+        fontSize: 18,
+    }
 });
