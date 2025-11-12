@@ -12,9 +12,9 @@ export default function Screen1() {
                 <View>
                     <Text style={{fontFamily: "ComicSans"}}>Screen 1</Text>
                     <CTAButton title={"go home"} onPress={() => {
-                    // @ts-ignore
+                        // @ts-ignore
                         navigation.navigate("Main");
-                }}/>
+                    }}/>
                 </View>
             </SafeAreaView>
         </SafeAreaProvider>
