@@ -3,25 +3,18 @@ import * as React from 'react';
 import Main from "./src/screens/Main";
 import {theme} from "./src/utils/Theme";
 import {useEffect} from "react";
-import MemeCamera from "./src/screens/MemeCamera";
-import {createStaticNavigation} from "@react-navigation/native";
+import {createStaticNavigation, NavigationContainer} from "@react-navigation/native";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
+import Camera from "./src/screens/Camera";
+import MemeComparison from "./src/screens/MemeComparison";
 
+export type RootStackParamList = {
+    Main: undefined;
+    MemeCamera: undefined;
+    MemeComparison: { photoUri: string };
+};
 
-const RootStack = createNativeStackNavigator({
-    screens: {
-        Main: {
-            screen: Main,
-            options: {headerShown: false},
-        },
-        MemeCamera: {
-            screen: MemeCamera,
-            options: {headerShown: false},
-        }
-    },
-});
-
-const Navigation = createStaticNavigation(RootStack);
+const RootStack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
     const [loaded, error] = useFonts({
@@ -37,6 +30,12 @@ export default function App() {
         return null;
     }
     return (
-        <Navigation theme={theme}/>
+        <NavigationContainer theme={theme}>
+            <RootStack.Navigator screenOptions={{headerShown: false}}>
+                <RootStack.Screen name="Main" component={Main}/>
+                <RootStack.Screen name="MemeCamera" component={Camera}/>
+                <RootStack.Screen name="MemeComparison" component={MemeComparison}/>
+            </RootStack.Navigator>
+        </NavigationContainer>
     );
 }

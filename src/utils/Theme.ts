@@ -8,7 +8,7 @@ export const theme: Theme = {
         card: "#ffb0b0",
         text: "#000000",
         border: "#ffc0c0",
-        notification: "#0b58ff",
+        notification: "#912aa8",
     },
     fonts: {
         regular: {

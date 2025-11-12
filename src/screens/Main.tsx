@@ -11,7 +11,7 @@ export default function Main() {
                 <View>
                     <Image style={styles.img} source={require("../../assets/imgs/cat.jpg")}/>
                     <Text style={{fontFamily: "ComicSans"}}>Open up App.tsx to start working on your app!</Text>
-                    <CTAButton title={"go to screen1"} onPress={() =>
+                    <CTAButton title={"Open Meme Recognizer"} onPress={() =>
                         // @ts-ignore
                         navigation.navigate("MemeCamera")
                     }/>
