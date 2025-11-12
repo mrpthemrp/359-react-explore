@@ -3,17 +3,18 @@ import {useNavigation} from '@react-navigation/native';
 import {StyleSheet, View, Text} from "react-native";
 import {CTAButton} from "../Components";
 
-export default function Main() {
+// @ts-ignore
+export default function Screen1() {
     const navigation = useNavigation();
     return (
         <SafeAreaProvider>
             <SafeAreaView style={styles.container}>
                 <View>
-                    <Text style={{fontFamily: "ComicSans"}}>Open up App.tsx to start working on your app!</Text>
-                    <CTAButton title={"go to screen1"} onPress={() =>
-                        // @ts-ignore
-                        navigation.navigate("Screen1")
-                    }/>
+                    <Text style={{fontFamily: "ComicSans"}}>Screen 1</Text>
+                    <CTAButton title={"go home"} onPress={() => {
+                    // @ts-ignore
+                        navigation.navigate("Main");
+                }}/>
                 </View>
             </SafeAreaView>
         </SafeAreaProvider>

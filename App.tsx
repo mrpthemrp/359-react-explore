@@ -1,17 +1,23 @@
 import {useFonts} from "expo-font";
 import * as React from 'react';
-import {createStaticNavigation} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Main from "./src/screens/Main";
 import {theme} from "./src/utils/Theme";
 import {useEffect} from "react";
+import Screen1 from "./src/screens/Screen1";
+import {createStaticNavigation, NavigationContainer} from "@react-navigation/native";
+import {createNativeStackNavigator} from "@react-navigation/native-stack";
+
 
 const RootStack = createNativeStackNavigator({
     screens: {
-        Home: {
+        Main: {
             screen: Main,
-            options: {headerShown: false, title: 'Main'},
+            options: {headerShown: false},
         },
+        Screen1: {
+            screen: Screen1,
+            options: {headerShown: false},
+        }
     },
 });
 
@@ -30,5 +36,7 @@ export default function App() {
     if (!loaded && !error) {
         return null;
     }
-    return <Navigation theme={theme}/>;
+    return (
+        <Navigation theme={theme}/>
+    );
 }
