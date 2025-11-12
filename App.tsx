@@ -4,7 +4,7 @@ import Main from "./src/screens/Main";
 import {theme} from "./src/utils/Theme";
 import {useEffect} from "react";
 import Screen1 from "./src/screens/Screen1";
-import {createStaticNavigation, NavigationContainer} from "@react-navigation/native";
+import {createStaticNavigation} from "@react-navigation/native";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 
 
