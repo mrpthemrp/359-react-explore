@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { Text, Image, StyleSheet, ActivityIndicator, ScrollView } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import React, {useEffect, useState} from "react";
+import {Text, Image, StyleSheet, ActivityIndicator, ScrollView} from "react-native";
+import {useNavigation} from "@react-navigation/native";
 import * as tf from "@tensorflow/tfjs";
 import "@tensorflow/tfjs-react-native";
-import { decodeJpeg } from "@tensorflow/tfjs-react-native";
-import { Asset } from "expo-asset";
-import { MemeTemplates } from "../../assets/templates/MemeTemplates";
+import {decodeJpeg} from "@tensorflow/tfjs-react-native";
+import {Asset} from "expo-asset";
+import {MemeTemplates} from "../../assets/templates/MemeTemplates";
 import * as ImageManipulator from "expo-image-manipulator";
-import type { RootStackParamList } from "../../App";
-import { CTAButton } from "../Components";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import type {RootStackParamList} from "../../App";
+import {CTAButton} from "../Components";
+import {NativeStackNavigationProp} from "@react-navigation/native-stack";
 
 type MemeComparisonNavigationProp = NativeStackNavigationProp<
     RootStackParamList,
@@ -20,9 +20,9 @@ type Props = {
     route: { params: { photoUri: string } };
 };
 
-export default function MemeComparison({ route }: Props) {
+export default function MemeComparison({route}: Props) {
     const navigation = useNavigation<MemeComparisonNavigationProp>();
-    const { photoUri } = route.params;
+    const {photoUri} = route.params;
 
     const [result, setResult] = useState<string | null>(null);
     const [matchedTemplateUri, setMatchedTemplateUri] = useState<string | null>(null);
@@ -45,7 +45,7 @@ export default function MemeComparison({ route }: Props) {
         return imageTensor;
     };
 
-    const SIMILARITY_THRESHOLD = 0.35;
+    const SIMILARITY_THRESHOLD = 0.1;
 
     useEffect(() => {
         (async () => {
@@ -54,7 +54,7 @@ export default function MemeComparison({ route }: Props) {
                 await tf.ready();
                 const model = await tf.loadGraphModel(
                     "https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v2_100_224/classification/3/default/1",
-                    { fromTFHub: true }
+                    {fromTFHub: true}
                 );
 
                 // Convert captured photo to JPEG (modern API)
@@ -76,7 +76,7 @@ export default function MemeComparison({ route }: Props) {
                     const templateJPEG = await ImageManipulator.manipulateAsync(
                         asset.localUri || asset.uri,
                         [],
-                        { compress: 1, format: ImageManipulator.SaveFormat.JPEG } // updated API
+                        {compress: 1, format: ImageManipulator.SaveFormat.JPEG} // updated API
                     );
 
                     const tensor = await loadImageAsTensor(templateJPEG.uri);
@@ -111,21 +111,21 @@ export default function MemeComparison({ route }: Props) {
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <Text style={styles.title}>Captured Photo:</Text>
-            <Image source={{ uri: photoUri }} style={styles.image} />
+            <Image source={{uri: photoUri}} style={styles.image}/>
 
-            {loading && <ActivityIndicator size="large" color="#007AFF" style={styles.loader} />}
+            {loading && <ActivityIndicator size="large" color="#007AFF" style={styles.loader}/>}
             {!loading && result && (
                 <>
                     <Text style={styles.result}>{result}</Text>
                     {matchedTemplateUri && (
                         <>
                             <Text style={styles.title}>Matched Template:</Text>
-                            <Image source={{ uri: matchedTemplateUri }} style={styles.image} />
+                            <Image source={{uri: matchedTemplateUri}} style={styles.meme}/>
                         </>
                     )}
                 </>
             )}
-            <CTAButton title={"Go Back"} onPress={() => navigation.navigate("MemeCamera")} />
+            <CTAButton title={"Go Back"} onPress={() => navigation.navigate("MemeCamera")}/>
         </ScrollView>
     );
 }
@@ -144,6 +144,12 @@ const styles = StyleSheet.create({
         width: 200,
         height: 200,
         resizeMode: "cover",
+        overflow: "hidden",
+        marginVertical: 10,
+    }, meme: {
+        width: "80%",
+        height: "80%",
+        resizeMode: "contain",
         overflow: "hidden",
         marginVertical: 10,
     },
