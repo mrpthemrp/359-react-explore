@@ -3,7 +3,7 @@ import * as React from 'react';
 import Main from "./src/screens/Main";
 import {theme} from "./src/utils/Theme";
 import {useEffect} from "react";
-import Screen1 from "./src/screens/Screen1";
+import MemeCamera from "./src/screens/MemeCamera";
 import {createStaticNavigation} from "@react-navigation/native";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 
@@ -14,8 +14,8 @@ const RootStack = createNativeStackNavigator({
             screen: Main,
             options: {headerShown: false},
         },
-        Screen1: {
-            screen: Screen1,
+        MemeCamera: {
+            screen: MemeCamera,
             options: {headerShown: false},
         }
     },
