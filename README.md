@@ -7,4 +7,5 @@ npm i --legacy-peer-deps
 
 Current files in templates to test against
 - Smudge the cat at dinner
-- 
+- Roll Safe
+- Chill Guy
