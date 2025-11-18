@@ -88,8 +88,13 @@ export default function Camera() {
     };
 
     if (!permission) return <Text style={styles.comicStyle}>{"Requesting camera permission…"}</Text>;
-    if (!permission.granted)
-        return <Button title="Grant permission" onPress={requestPermission}/>;
+    if (!permission.granted) {
+        return (
+            <View style={styles.container}>
+                <CTAButton title="Grant permission" onPress={requestPermission} disabled={false}/>
+            </View>
+        );
+    }
 
     return (
         <View style={styles.container}>
@@ -145,7 +150,7 @@ const styles = StyleSheet.create({
     comicStyle: {
         fontFamily: "ComicSans",
     },
-    title:{
+    title: {
         fontFamily: "ComicSans",
         fontSize: 18,
     }
