@@ -74,7 +74,7 @@ export default function Camera() {
             const asset = await MediaLibrary.createAssetAsync(photo.uri);
             console.log("Saved photo to camera roll:", asset.uri);
 
-            // Resolve local URI (iOS PH asset)
+            // Resolve local URI - ios safe
             const assetInfo = await MediaLibrary.getAssetInfoAsync(asset);
             const usableUri = assetInfo.localUri || asset.uri;
 

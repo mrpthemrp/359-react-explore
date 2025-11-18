@@ -57,7 +57,7 @@ export default function MemeComparison({route}: Props) {
                     {fromTFHub: true}
                 );
 
-                // Convert captured photo to JPEG (modern API)
+                // convert captured photo to JPG
                 const capturedJPEG = await ImageManipulator.manipulateAsync(photoUri, [], {
                     compress: 1,
                     format: ImageManipulator.SaveFormat.JPEG,
